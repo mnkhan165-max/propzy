@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PROPZY — Find. Discover. Own.</title>
+<title>propertybazaar — Find. Discover. Own.</title>
 <style>
 :root{--ink:#152235;--muted:#6b7788;--blue:#2357d8;--pale:#f4f7fb;--line:#e5eaf1;--green:#12835b}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:#fff}
@@ -62,7 +62,7 @@ main{max-width:1160px;margin:auto;padding:30px 20px}.section-head{display:flex;j
 <label class="filehint"><b>Upload property photos</b><br><span class="small">Select up to 5 photos from your phone or computer (JPG, PNG, WEBP). They will be resized to help fit browser storage.</span><br><input id="photos" name="photos" type="file" accept="image/*" multiple style="margin-top:10px;border:0;padding:0"><div id="preview" class="preview"></div></label>
 <textarea name="description" placeholder="Details: bedrooms, amenities, condition, etc."></textarea>
 <button class="primary full" type="submit">Submit listing</button></form></section></main>
-<footer class="footer"><b>PROPZY</b> · Find. Discover. Own.<br><span class="small" style="color:#b7c4d6">Demo marketplace — verify all details before making a property decision.</span></footer>
+<footer class="footer"><b>propertybazaar</b> · Find. Discover. Own.<br><span class="small" style="color:#b7c4d6">Demo marketplace — verify all details before making a property decision.</span></footer>
 <div class="toast" id="toast"></div>
 <div class="modal" id="detailModal" onclick="if(event.target===this)closeDetail()"><div class="modalbox"><button class="close" onclick="closeDetail()" aria-label="Close">×</button><div id="detailContent"></div></div></div>
 <script>
@@ -75,7 +75,7 @@ const sample=[
 {title:'Office space',deal:'Rent',type:'Office',price:22000,location:'Akola · Old City',area:'700 sq ft',contact:'',description:'Office space demo listing.',images:['https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=80']}
 ];
 let mode='All', selectedPhotos=[], userListings=[];
-try{userListings=JSON.parse(localStorage.getItem('propzyListings')||'[]')}catch(e){userListings=[]}
+try{userListings=JSON.parse(localStorage.getItem('propertybazaarListings')||'[]')}catch(e){userListings=[]}
 let all=[...userListings,...sample];
 function money(n,deal){return deal==='Rent'?'₹'+Number(n).toLocaleString('en-IN')+'/mo':'₹'+Number(n).toLocaleString('en-IN')}
 function photoOf(p){return (p.images&&p.images[0])||p.image||'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1000&q=80'}
@@ -91,10 +91,10 @@ function openDetail(id,sampleIndex){const p=findProperty(id,sampleIndex);if(!p)r
 document.querySelector('#detailContent').innerHTML=`<img class="detailhero" id="mainDetailPhoto" src="${escAttr(imgs[0])}"><div class="detailphotos">${imgs.map(src=>`<img src="${escAttr(src)}" onclick="document.querySelector('#mainDetailPhoto').src=this.src">`).join('')}</div><div class="eyebrow">${p.deal==='Rent'?'For rent':'For sale'} · ${esc(p.type)}</div><h2>${esc(p.title)}</h2><div class="price">${money(p.price,p.deal)}</div><p class="meta">${esc(p.location)} · ${esc(p.area||'Area not specified')}</p><p>${esc(p.description||'No description provided.')}</p><p class="small">${p.isDemo?'Sample demonstration property. Details and availability are not verified.':'User-submitted listing. Verify ownership, documents and details independently.'}</p><button class="primary" onclick="contact('${escAttr(p.contact||'')}','${escAttr(p.title)}')">Contact listing</button>`;
 document.querySelector('#detailModal').classList.add('show')}
 function closeDetail(){document.querySelector('#detailModal').classList.remove('show')}
-function contact(phone,title){if(!phone){toast('Demo listing: contact details not provided.');return}let digits=phone.replace(/\\D/g,'');if(digits.length>=10)window.open('https://wa.me/'+digits+'?text='+encodeURIComponent('Hi, I am interested in '+title+' listed on PROPZY.'),'_blank');else toast('Please add a valid contact number to this listing.')}
+function contact(phone,title){if(!phone){toast('Demo listing: contact details not provided.');return}let digits=phone.replace(/\\D/g,'');if(digits.length>=10)window.open('https://wa.me/'+digits+'?text='+encodeURIComponent('Hi, I am interested in '+title+' listed on propertybazaar.'),'_blank');else toast('Please add a valid contact number to this listing.')}
 function fileToDataURL(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.72))};img.onerror=reject;img.src=reader.result};reader.onerror=reject;reader.readAsDataURL(file)})}
 document.querySelector('#photos').addEventListener('change',async e=>{const files=[...e.target.files].slice(0,5);selectedPhotos=[];document.querySelector('#preview').innerHTML='';for(const f of files){if(!f.type.startsWith('image/'))continue;try{const data=await fileToDataURL(f);selectedPhotos.push(data);const img=document.createElement('img');img.src=data;document.querySelector('#preview').appendChild(img)}catch(err){toast('Could not read one of the selected photos.')}}if(e.target.files.length>5)toast('Maximum 5 photos allowed.')});
-document.querySelector('#propertyForm').addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.price=Number(d.price);d.images=selectedPhotos;d.id=Date.now();d.isDemo=false;try{userListings.unshift(d);localStorage.setItem('propzyListings',JSON.stringify(userListings));all=[...userListings,...sample];e.target.reset();selectedPhotos=[];document.querySelector('#preview').innerHTML='';applyFilters();toast('Listing added on this device. It is not yet visible to other visitors.');scrollToListings()}catch(err){toast('Browser storage is full. Try fewer or smaller photos.')}})
+document.querySelector('#propertyForm').addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.price=Number(d.price);d.images=selectedPhotos;d.id=Date.now();d.isDemo=false;try{userListings.unshift(d);localStorage.setItem('propertybazaarListings',JSON.stringify(userListings));all=[...userListings,...sample];e.target.reset();selectedPhotos=[];document.querySelector('#preview').innerHTML='';applyFilters();toast('Listing added on this device. It is not yet visible to other visitors.');scrollToListings()}catch(err){toast('Browser storage is full. Try fewer or smaller photos.')}})
 function toast(s){let t=document.querySelector('#toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',3500)}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function escAttr(s=''){return esc(s).replace(/`/g,'')}
