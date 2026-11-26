@@ -75,7 +75,7 @@ const sample=[
 {title:'Office space',deal:'Rent',type:'Office',price:22000,location:'Akola · Old City',area:'700 sq ft',contact:'',description:'Office space demo listing.',images:['https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=80']}
 ];
 let mode='All', selectedPhotos=[], userListings=[];
-try{userListings=JSON.parse(localStorage.getItem('propertybazaarListings')||'[]')}catch(e){userListings=[]}
+try{userListings=JSON.parse(localStorage.getItem('propertybazaarListings')||localStorage.getItem('propzyListings')||'[]')}catch(e){userListings=[]}
 let all=[...userListings,...sample];
 function money(n,deal){return deal==='Rent'?'₹'+Number(n).toLocaleString('en-IN')+'/mo':'₹'+Number(n).toLocaleString('en-IN')}
 function photoOf(p){return (p.images&&p.images[0])||p.image||'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1000&q=80'}
